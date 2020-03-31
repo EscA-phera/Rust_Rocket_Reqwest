@@ -1,0 +1,25 @@
+[package]
+name = "pre_kan"
+version = "0.1.0"
+authors = ["EscA-phera <esca.phera@esphera.xyz>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = "*"
+rocket_codegen = "*"
+reqwest = { version = "*", features = ["json", "blocking"] }
+regex = "*"
+serde_json = "*"
+serde_derive = "*"
+serde = { version = "*", features = ["derive"] }
+diesel = { version = "*", features = ["mysql", "chrono"] }
+redis = "*"
+dotenv = "*"
+chrono = "*"
+
+[dependencies.rocket_contrib]
+version = "*"
+default-features = false
+features = ["json", "tera"]

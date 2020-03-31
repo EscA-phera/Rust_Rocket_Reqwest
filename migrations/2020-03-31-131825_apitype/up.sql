@@ -1,0 +1,6 @@
+CREATE TABLE `receive_api` (
+	`token` VARCHAR(256) NOT NULL,
+	`ip` VARCHAR(256) NOT NULL,
+	`date` DATETIME NOT NULL,
+    PRIMARY KEY (`ip`)
+) CHARSET=utf8;
