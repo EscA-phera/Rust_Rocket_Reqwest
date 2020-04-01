@@ -18,8 +18,11 @@ diesel = { version = "*", features = ["mysql", "chrono"] }
 redis = "*"
 dotenv = "*"
 chrono = "*"
+http = "*"
+rocket-client-addr = "0.4.3"
+tokio = { version = "*", features = ["full"] }
 
 [dependencies.rocket_contrib]
 version = "*"
 default-features = false
-features = ["json", "tera"]
+features = ["json", "tera", "tera_templates"]

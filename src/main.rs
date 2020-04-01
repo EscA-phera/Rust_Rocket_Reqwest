@@ -13,33 +13,21 @@ extern crate serde_derive;
 use pre_kan::create_connection;
 use pre_kan::establish_connection;
 
+pub mod frontend;
+pub mod lib_redis;
+
 use std::string::String;
 use std::net::SocketAddr;
 
 use rocket::request::Request;
 use rocket::response::{ Response, Responder, Result };
 use rocket::http::{ Status, ContentType };
+
+use rocket_contrib::templates;
 use rocket_contrib::json::{ Json, JsonValue };
 
 use regex::Regex;
 use serde::{ Serialize, Deserialize };
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ShipApi {
-    api_member_id: u32,
-    api_id: u32,
-    api_name: String,
-    api_name_id: String,
-    api_mission: [u32; 4],
-    api_flagship: String,
-    api_ship: [u32; 6],
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ApiType {
-    api_token: String,
-    api_verno: u32,
-}
 
 #[derive(Serialize, Deserialize)]
 pub struct PlaceType {
@@ -68,7 +56,7 @@ pub fn place(data: Json<PlaceType>, remote_addr: SocketAddr) -> ApiResponse {
     let length: u32 = 40;
     
     let special_letter = Regex::new(r"[!@#$%^&*(),.?:{}|<>]").unwrap();
-    let result: String = special_letter.replace_all(&data.0.token, "nohack").to_string();
+    let result: String = String::from(special_letter.replace_all(&data.0.token, "nohack"));
 
     let req_url: String = format!("http://{}/kcsapi/api_get_member/deck", &data.0.ip);
     let client_ip: String = format!("{}", &remote_addr);
@@ -76,23 +64,40 @@ pub fn place(data: Json<PlaceType>, remote_addr: SocketAddr) -> ApiResponse {
     let status_point: String;
     let data_status: String;
 
-    if result == data.0.token {
-        if check_string == length {
-            let result_data = format!("{:?}", post_data(req_url, data.0.token, client_ip));
-            status_point = "success!".to_string();
-            data_status = result_data.to_string();
+    if String::from(&data.0.token).contains("\"") {
+        status_point = String::from("failed");
+        data_status = String::from("your token is something wrong.");
+    }
+
+    else if result.contains("'") {
+        status_point = String::from("failed");
+        data_status = String::from("your token is something wrong.");
+    }
+
+    else if result.contains("%") {
+        status_point = String::from("failed");
+        data_status = String::from("your token is something wrong.");
+    }
+
+    else {
+        if result == data.0.token {
+            if check_string == length {
+                let result_data = format!("{:?}", post_data(req_url, data.0.token, client_ip));
+                status_point = String::from("success!");
+                data_status = String::from(result_data);
+            }
+
+            else {
+                status_point = String::from("failed");
+                data_status = String::from("your token is something wrong.");
+            }
         }
 
         else {
-            status_point = "failed".to_string();
-            data_status = "your token is something wrong.".to_string();
+            status_point = String::from("failed");
+            data_status = String::from("your token is something wrong.");
         }
-        }
-
-        else {
-            status_point = "failed".to_string();
-            data_status = "your token is something wrong.".to_string();
-        }
+    }
 
         ApiResponse {
             json: json!({
@@ -125,5 +130,8 @@ pub fn post_data(urls: String, token: String, ip: String) -> std::result::Result
 }
 
 fn main() {
-    println!("Hello, world!");
+    rocket::ignite()
+        .mount("/", routes![frontend::index])
+        .attach(templates::Template::fairing())
+        .launch();
 }

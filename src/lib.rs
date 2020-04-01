@@ -27,7 +27,7 @@ pub fn create_connection(conn: &MysqlConnection, token: String, ip: String) -> R
     let new_schema = NewReceiveApi {
         token: token,
         ip: ip,
-        date: NaiveDateTime::from(local)
+        date: NaiveDateTime::from(local),
     };
 
     diesel::insert_into(receive_api::table)
