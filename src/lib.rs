@@ -12,7 +12,7 @@ use chrono::{ NaiveDateTime, Local };
 
 use std::env;
 
-use self::models::{ ReceiveApi, NewReceiveApi };
+use self::models::{ ReceiveApi, NewReceiveApi, ErrorTable, NewErrorTable };
 
 pub fn establish_connection() -> MysqlConnection {
     dotenv().ok();
@@ -36,6 +36,26 @@ pub fn create_connection(conn: &MysqlConnection, token: String, ip: String) -> R
         .expect("Error saving new session");
 
     receive_api::table.order(receive_api::token.desc())
+        .first(conn)
+        .unwrap()
+}
+
+pub fn error_handling(conn: &MysqlConnection, user: String, data: String) -> ErrorTable {
+    use schema::errors;
+    let local = Local::now().naive_local();
+
+    let new_schema = NewErrorTable {
+        user: user,
+        error: data,
+        date: NaiveDateTime::from(local),
+    };
+
+    diesel::insert_into(errors::table)
+        .values(&new_schema)
+        .execute(conn)
+        .expect("Error saving new session");
+
+    errors::table.order(errors::user.desc())
         .first(conn)
         .unwrap()
 }

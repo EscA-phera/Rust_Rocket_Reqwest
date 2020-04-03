@@ -1,0 +1,6 @@
+CREATE TABLE `errors` (
+	`user` VARCHAR(512) NOT NULL,
+	`error` VARCHAR(64) NOT NULL,
+	`date` DATETIME NOT NULL,
+    PRIMARY KEY (`user`)
+) CHARSET=utf8;

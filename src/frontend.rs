@@ -2,13 +2,13 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_client_addr;
 
+use rocket::response::NamedFile;
 use rocket_contrib::templates;
 use rocket_client_addr::ClientRealAddr;
 
 use std::collections::HashMap;
 use std::net::AddrParseError;
-
-use crate::lib_redis::*;
+use std::path::{ Path, PathBuf };
 
 #[get("/")]
 pub fn index(ip: &ClientRealAddr) -> std::result::Result<templates::Template, AddrParseError> {
@@ -54,4 +54,9 @@ pub fn index(ip: &ClientRealAddr) -> std::result::Result<templates::Template, Ad
 
     context.insert("data", String::from(client));
     serde::export::Ok(templates::Template::render("index", &context))
+}
+
+#[get("/src/<path..>")]
+pub fn all_public(path: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("src/").join(path)).ok()
 }

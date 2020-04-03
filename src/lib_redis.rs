@@ -1,19 +1,18 @@
 extern crate redis;
-use redis::AsyncCommands;
 
 #[tokio::main]
-async fn connect_redis(key: String, data: String) -> redis::RedisResult<()> {
+pub async fn connect_redis(key: String, data: String) -> redis::RedisResult<()> {
     let client = redis::Client::open("redis://127.0.0.1/").unwrap();
     let mut conn = client.get_async_connection().await?;
 
-    conn.set("data", b"test").await?;
     redis::cmd("SET")
-        .arg(&["key2", "bar"])
+        .arg(&[&key, &data])
         .query_async(&mut conn)
         .await?;
 
-    let result = redis::cmd("MGET")
-        .arg(&["data", "key2"])
+    redis::cmd("EXPIRE")
+        .arg(&key)
+        .arg(86400)
         .query_async(&mut conn)
         .await?;
 
