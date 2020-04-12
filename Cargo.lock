@@ -1096,13 +1096,11 @@ dependencies = [
  "reqwest",
  "rocket",
  "rocket-client-addr",
- "rocket_codegen",
  "rocket_contrib",
  "serde",
  "serde_derive",
  "serde_json",
  "tokio",
- "wasm-bindgen",
 ]
 
 [[package]]

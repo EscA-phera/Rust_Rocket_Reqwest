@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+@font-face {
+    font-family: 'font1';
+    src: url("/design/fonts/UniSans.ttf");
+}
+@media(min-width: 800px) {
+    *{
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #2C2F33;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    ul {
+        float: right;
+        list-style-type: none;
+        margin-top: 25px;
+    }
+
+    ul li {
+        display: inline-block;
+        margin-right: 40px;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    ul li a {
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.6);
+        padding: 5px 0.2px;
+        transition: 0.5s ease;
+    }
+
+    ul li a:hover {
+        color: white;
+    }
+
+    ul li a.downloads {
+        border: 1px solid white;
+        padding: 2px 20px;
+        border-radius: 3px;
+        color: white;
+    }
+
+    ul li a.downloads:hover {
+        background-color: white;
+        color: #2C2F33;
+    }
+
+    .logo {
+        color: white;
+    }
+
+    .logo img {
+        position: relative;
+        float: left;
+        height: 64px;
+        widows: 100px;
+        top: 15px;
+    }
+
+    .main {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .title {
+        position: absolute;
+        justify-content: center;
+        text-align: center;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .title h1 {
+        color: white;
+        font-family: 'font1';
+        font-size: 55px;
+        font-weight: 300;
+        letter-spacing: -1px;
+    }
+
+    .title p {
+        color: white;
+        font-family: 'font1';
+        font-size: 20px;
+    }
+
+    footer {
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+        position: absolute;
+        justify-content: center;
+        text-align: center;
+        top: 92%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    footer p {
+        text-align: center;
+    }
+}

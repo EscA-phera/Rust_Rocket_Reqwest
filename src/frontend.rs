@@ -18,45 +18,25 @@ pub fn index(ip: &ClientRealAddr) -> std::result::Result<templates::Template, Ad
     let client_ipv6: String = ip.get_ipv6_string();
 
     let ip_error: String = String::from("your ip is something wrong...");
-    let no_hack: String = String::from("no hack");
+    let no_hack: String = String::from("local players");
 
     let client: String;
 
-    if client_ipv4.is_empty() == true {
-        client = client_ipv6
-    }
-
+    if client_ipv4.is_empty() == true { client = client_ipv6 }
     else {
-        if client_ipv4 == String::from("127.0.0.1") {
-            client = no_hack
-        }
-
-        else if client_ipv4 == String::from("localhost") {
-            client = no_hack
-        }
-
-        else if client_ipv4 == String::from("0.0.0.0") {
-            client = no_hack
-        }
-
-        else if client_ipv4 == String::from("8.8.8.8") {
-            client = ip_error
-        }
-
-        else if client_ipv4 == String::from("1.1.1.1") {
-            client = ip_error
-        }
-
-        else {
-            client = client_ipv4
-        }
+        if client_ipv4 == String::from("127.0.0.1") { client = no_hack }
+        else if client_ipv4 == String::from("localhost") { client = no_hack }
+        else if client_ipv4 == String::from("0.0.0.0") { client = no_hack }
+        else if client_ipv4 == String::from("8.8.8.8") { client = ip_error }
+        else if client_ipv4 == String::from("1.1.1.1") { client = ip_error }
+        else { client = client_ipv4 }
     }
 
     context.insert("data", String::from(client));
     serde::export::Ok(templates::Template::render("index", &context))
 }
 
-#[get("/src/<path..>")]
+#[get("/design/<path..>")]
 pub fn all_public(path: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("src/").join(path)).ok()
+    NamedFile::open(Path::new("static/").join(path)).ok()
 }
