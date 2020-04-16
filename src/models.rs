@@ -5,6 +5,7 @@ use chrono::NaiveDateTime;
 
 #[derive(Queryable)]
 pub struct ReceiveApi {
+    pub user: String,
     pub token: String,
     pub ip: String,
     pub date: NaiveDateTime,
@@ -20,6 +21,7 @@ pub struct ErrorTable {
 #[derive(Insertable)]
 #[table_name = "receive_api"]
 pub struct NewReceiveApi {
+    pub user: String,
     pub token: String,
     pub ip: String,
     pub date: NaiveDateTime,

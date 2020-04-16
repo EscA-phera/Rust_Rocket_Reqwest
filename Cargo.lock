@@ -1091,6 +1091,7 @@ dependencies = [
  "diesel",
  "dotenv",
  "http",
+ "rand",
  "redis",
  "regex",
  "reqwest",

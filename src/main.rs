@@ -195,8 +195,7 @@ pub fn error_control(data: Json<ErrorType>, remote_addr: &ClientRealAddr) -> Api
         }
 
         let result_ip: String = client.clone();
-        error_handling(&establish_connection(), client, result_error);
-
+        error_handling(&establish_connection(), result_error);
         ApiResponse {
             json: json! ({
                 "status": "success!",

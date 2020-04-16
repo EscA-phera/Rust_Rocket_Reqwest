@@ -8,6 +8,7 @@ table! {
 
 table! {
     receive_api (ip) {
+        user -> Varchar,
         token -> Varchar,
         ip -> Varchar,
         date -> Datetime,

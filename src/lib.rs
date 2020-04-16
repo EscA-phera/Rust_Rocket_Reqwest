@@ -2,6 +2,7 @@
 extern crate diesel;
 extern crate dotenv;
 extern crate chrono;
+extern crate rand;
 
 pub mod models;
 pub mod schema;
@@ -9,22 +10,27 @@ pub mod schema;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use chrono::{ NaiveDateTime, Local };
+use rand::{ distributions, Rng };
 
 use std::env;
-
 use self::models::{ ReceiveApi, NewReceiveApi, ErrorTable, NewErrorTable };
 
 pub fn establish_connection() -> MysqlConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("Database Url must be set.");
-    MysqlConnection::establish(&database_url).expect(&format!("Error : {}", database_url))
+    MysqlConnection::establish(&database_url).expect("Error : database is not connected.")
 }
 
 pub fn create_connection(conn: &MysqlConnection, token: String, ip: String) -> ReceiveApi {
     use schema::receive_api;
     let local = Local::now().naive_local();
+    let keys = rand::thread_rng()
+        .sample_iter(&distributions::Alphanumeric)
+        .take(20)
+        .collect::<String>();
 
     let new_schema = NewReceiveApi {
+        user: keys,
         token: token,
         ip: ip,
         date: NaiveDateTime::from(local),
@@ -40,9 +46,13 @@ pub fn create_connection(conn: &MysqlConnection, token: String, ip: String) -> R
         .unwrap()
 }
 
-pub fn error_handling(conn: &MysqlConnection, user: String, data: String) -> ErrorTable {
+pub fn error_handling(conn: &MysqlConnection, data: String) -> ErrorTable {
     use schema::errors;
     let local = Local::now().naive_local();
+    let user = rand::thread_rng()
+        .sample_iter(&distributions::Alphanumeric)
+        .take(20)
+        .collect::<String>();
 
     let new_schema = NewErrorTable {
         user: user,

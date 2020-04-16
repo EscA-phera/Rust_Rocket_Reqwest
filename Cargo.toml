@@ -20,6 +20,7 @@ chrono = "*"
 http = "*"
 rocket-client-addr = "0.4.3"
 tokio = { version = "*", features = ["full"] }
+rand = "*"
 
 [dependencies.rocket_contrib]
 version = "*"
