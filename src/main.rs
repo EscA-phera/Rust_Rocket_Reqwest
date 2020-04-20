@@ -10,6 +10,10 @@ extern crate serde;
 extern crate serde_json;
 extern crate serde_derive;
 
+use pre_kan::create_connection;
+use pre_kan::establish_connection;
+use pre_kan::error_handling;
+
 use std::string::String;
 use serde::{ Serialize, Deserialize };
 
@@ -26,9 +30,6 @@ use reqwest::header::HeaderMap;
 pub mod frontend;
 pub mod lib_redis;
 
-use pre_kan::create_connection;
-use pre_kan::establish_connection;
-use pre_kan::error_handling;
 use crate::lib_redis::connect_redis;
 
 #[derive(Serialize, Deserialize)]
