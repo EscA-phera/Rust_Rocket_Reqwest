@@ -68,28 +68,12 @@ impl<'r> Responder<'r> for ApiResponse {
 
 #[post("/api/v1/place", format = "application/json", data = "<data>")]
 pub fn place(data: Json<PlaceType>, remote_addr: ClientRealAddr) -> ApiResponse {
-    let check_string: u32 = String::from(&data.0.token).chars().count() as u32;
-    let length: u32 = 40;
-
     let client_ipv4: String = remote_addr.get_ipv4_string().expect("check ipv6");
     let client_ipv6: String = remote_addr.get_ipv6_string();
     let client: String;
 
-    let ip_error: String = String::from("unknown ip players _ DNS");
-    let no_hack: String = String::from("local players _ SET localhost");
-
     if client_ipv4.is_empty() == true { client = client_ipv6 }
-    else {
-        if client_ipv4 == String::from("127.0.0.1") { client = no_hack }
-        else if client_ipv4 == String::from("localhost") { client = no_hack }
-        else if client_ipv4 == String::from("0.0.0.0") { client = no_hack }
-        else if client_ipv4 == String::from("8.8.8.8") { client = ip_error }
-        else if client_ipv4 == String::from("1.1.1.1") { client = ip_error }
-        else { client = client_ipv4 }
-    }
-
-    let special_letter = Regex::new(r"[!@#$%^&*(),.?:{}|<>]").unwrap();
-    let result: String = String::from(special_letter.replace_all(&data.0.token, "nohack"));
+    else { client = client_ipv4 }
 
     let req_url: String = format!("http://{}/kcsapi/api_get_member/preset_deck", &data.0.ip);
     let client_ip: String = format!("{}", &client);
@@ -98,29 +82,10 @@ pub fn place(data: Json<PlaceType>, remote_addr: ClientRealAddr) -> ApiResponse 
 
     let status_point: String;
     let data_status: String;
+    let client_ip_copy = client_ip.clone();
+    let token_copy = data.0.token.clone();
 
-    if String::from(&data.0.token).contains("\"") {
-        status_point = String::from("failed");
-        data_status = String::from("your token is something wrong.");
-    }
-
-    else if result.contains("'") {
-        status_point = String::from("failed");
-        data_status = String::from("your token is something wrong.");
-    }
-
-    else if result.contains("%") {
-        status_point = String::from("failed");
-        data_status = String::from("your token is something wrong.");
-    }
-
-    else {
-        if result == data.0.token {
-            if check_string == length {
-                let client_ip_copy = client_ip.clone();
-                let token_copy = data.0.token.clone();
-
-                let result_data: String = post_data(req_url, data.0.token, data.0.ip, data.0.version);
+    let result_data: String = post_data(req_url, data.0.token, data.0.ip, data.0.version);
 
                 match connect_redis(client_ip_copy, token_copy) {
                     Ok(()) => {
@@ -133,19 +98,6 @@ pub fn place(data: Json<PlaceType>, remote_addr: ClientRealAddr) -> ApiResponse 
                         data_status = String::from(result_data);
                     }
                 }
-            }
-
-            else {
-                status_point = String::from("failed");
-                data_status = String::from("your token is something wrong.");
-            }
-        }
-
-        else {
-            status_point = String::from("failed");
-            data_status = String::from("your token is something wrong.");
-        }
-    }
 
     match lib_redis::connect_redis(client_ip_data, token_data) {
         Ok(()) => None,
@@ -174,29 +126,17 @@ pub fn error_control(data: Json<ErrorType>, remote_addr: &ClientRealAddr) -> Api
     }
 
     else {
-        let special_letter = Regex::new(r"[!@#$%^&*(),.?:{}|<>]").unwrap();
-        let result_error: String = String::from(special_letter.replace_all(&data.0.error, "nohack"));
 
         let client_ipv4: String = remote_addr.get_ipv4_string().expect("check ipv6");
         let client_ipv6: String = remote_addr.get_ipv6_string();
         let client: String;
 
-        let ip_error: String = String::from("your ip is something wrong...");
-        let no_hack: String = String::from("no hack");
-
         if client_ipv4.is_empty() == true { client = client_ipv6 }
         else {
-            if client_ipv4 == String::from("127.0.0.1") { client = no_hack }
-            else if client_ipv4 == String::from("localhost") { client = no_hack }
-            else if client_ipv4 == String::from("0.0.0.0") { client = no_hack }
-            else if client_ipv4 == String::from("8.8.8.8") { client = ip_error }
-            else if client_ipv4 == String::from("1.1.1.1") { client = ip_error }
-            else if client_ipv4 == String::from("check ipv6") { client = client_ipv6 }
-            else { client = client_ipv4 }
+            client = client_ipv4
         }
 
         let result_ip: String = client.clone();
-        error_handling(&establish_connection(), result_error);
         ApiResponse {
             json: json! ({
                 "status": "success!",
@@ -263,14 +203,14 @@ pub fn privilege() -> templates::Template {
 }
 
 #[catch(422)]
-pub fn json_post_error() -> templates::Template {
-    let context = ErrorMessage {
-        data: String::from("404"),
-        text: String::from("PAGE NOT FOUND"),
-        name: String::from("Page Not Found")
-    };
-
-    templates::Template::render("error", &context)
+pub fn json_post_error() -> ApiResponse {
+    ApiResponse {
+        json: json! ({
+            "status": "error",
+            "data": "wrong address"
+        }),
+        status: Status::new(404, "wrong address")
+    }
 }
 
 #[catch(500)]

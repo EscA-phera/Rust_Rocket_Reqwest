@@ -24,12 +24,7 @@ pub fn index(ip: &ClientRealAddr) -> std::result::Result<templates::Template, Ad
 
     if client_ipv4.is_empty() == true { client = client_ipv6 }
     else {
-        if client_ipv4 == String::from("127.0.0.1") { client = no_hack }
-        else if client_ipv4 == String::from("localhost") { client = no_hack }
-        else if client_ipv4 == String::from("0.0.0.0") { client = no_hack }
-        else if client_ipv4 == String::from("8.8.8.8") { client = ip_error }
-        else if client_ipv4 == String::from("1.1.1.1") { client = ip_error }
-        else { client = client_ipv4 }
+        client = client_ipv4
     }
 
     context.insert("data", String::from(client));
